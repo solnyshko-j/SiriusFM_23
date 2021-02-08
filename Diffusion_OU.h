@@ -1,5 +1,5 @@
 #pragma once
-amespace SiriusFM{
+namespace SiriusFM{
 class DiffusionOU{
 private:
   double const m_sigma;
