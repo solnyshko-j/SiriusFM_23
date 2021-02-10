@@ -50,7 +50,7 @@ namespace SiriusFM{
     std::mt19937_64 U;
     double stau = sqrt(tau);
     //double tlast = yT-y0-double(L-2)*tau;
-    double tlast = (Tsec%tau_sec == 0)?tau:YearFracInterval(Tsec-(L-1)*tau_sec);
+    double tlast = (Tsec%tau_sec == 0)?tau:YearFracInterval(Tsec-(L)*tau_sec);
     assert(tlast>=0 && tlast <= tau);
     double slast = sqrt(tlast);
     assert(slast>=0 && slast <= stau);
@@ -80,18 +80,24 @@ namespace SiriusFM{
         double Z = N01(U);
         double Sn0, Sn1;
         if(l==L-1){
+
           Sn0 = Sp0 + mu0*tlast + sigma0*Z*slast;
           Sn1 = Sp1 + mu1*tlast - sigma1*Z*slast;
           y+=tlast;
         }else{
+
           Sn0 = Sp0 + mu0*tau + sigma0*Z*stau;
           Sn1 = Sp1 + mu1*tau - sigma1*Z*stau;
+
           y+=tau;
+
         }
+
         path0[l] = Sn0;
         path1[l] = Sn1;
+
         Sp0 = Sn0;
-        Sn1 = Sn1;
+        Sp1 = Sn1;
       }
     }
     m_L = L;

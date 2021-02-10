@@ -1,0 +1,14 @@
+###git###
+git status //посмотреть что изменено относительно последнего коммита
+git add // add new files into git system
+git commit -m "what's new?"//only for compilable files
+git push // add to git repository
+git pull// download
+vi
+esc -> shift+Z+Z    // for exit  with saving
+shift +: // for open command line
+  w // save file
+  w!// save in all cases
+  q// exit with asking about saving
+  q!//exit without saving
+i //exit from command

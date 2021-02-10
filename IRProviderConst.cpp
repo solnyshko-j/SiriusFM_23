@@ -1,20 +1,33 @@
-#include "IRProviderConst.h"
-#include <cstdio>
 #include <cstdlib>
-namespace SiriusFM{
-  IRProvider<IRModeE::Const>::IRProvider
-  (char const * a_file){
-    FILE * f;
-    f = fopen(a_file, "w");
-    char  buff[64];
-    double r;
-    for(int i = 0; i < int(CcyE::N); i++){
-      m_IRs[i] = 0;
+#include <cstdio>
+#include "IRProviderConst.h"
+#define BUFF_SIZE 256
+#define CCY_SIZE 3
+
+namespace SiriusFM
+{
+    IRProvider <IRModeE::Const> :: IRProvider (char const * a_file)
+    {
+        if (a_file == nullptr || * a_file == '\0')
+        {
+            return;
+        }
+
+        char buff_num[BUFF_SIZE];
+        char buff_ccy[CCY_SIZE + 1];
+
+        FILE * file;
+        if (!(file = fopen(a_file, "r")))
+        {
+            throw std::out_of_range("File error");
+        }
+
+        while (fgets(buff_ccy, CCY_SIZE + 1, file))
+        {
+            fgets(buff_num, BUFF_SIZE, file);
+            m_IRs[int(str2CcyE(buff_ccy))] = strtod(buff_num + 1, NULL);
+        }
+
+        fclose(file);
     }
-    while(fgets(buff, 64, f)!=nullptr){
-      buff[3]='\0';
-      r = atof(buff+4);
-      m_IRs[int(str2CcyE(buff))] = r;
-    }
-  }
 }

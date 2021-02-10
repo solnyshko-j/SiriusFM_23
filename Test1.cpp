@@ -1,5 +1,5 @@
 #include <iostream>
-#include "DiffusionGBM.h"
+#include "Diffusion_GBM.h"
 #include "IRProviderConst.h"
 #include "MCEngine1D.hpp"
 using namespace SiriusFM;
@@ -15,6 +15,7 @@ int main(int argc, char * argv[]){ // mu, sigma, S0, T_days, tau_min, P
   long T_days = atol(argv[4]);
   long tau_min = atol(argv[5]);
   long P = atol(argv[6]);
+
   //check all params are > 0; if(...) {cerr << "..."; return 2;}
   CcyE ccyA = CcyE::USD;
 
@@ -29,13 +30,18 @@ int main(int argc, char * argv[]){ // mu, sigma, S0, T_days, tau_min, P
   time_t t0 = time(nullptr);
   time_t T = t0 + T_days*86400;
   double T_years = T_days/365.25;
+
   // Run MC
   mce.Simulate<false>(t0, T, tau_min, P, S0, &Diff, &irp, &irp, ccyA, ccyA);
+
+
   // Analize the results
   auto res = mce.GetPaths();
   long L1 = get<0>(res);
   long P1 = get<1>(res);
   double const * paths = get<2>(res);
+
+
   // compute E of log(St)
   double EST = 0;
   double EST2 = 0;
@@ -48,16 +54,18 @@ int main(int argc, char * argv[]){ // mu, sigma, S0, T_days, tau_min, P
     }
     ++NVP;
     double RT = log(ST/S0);
-    EST += RT;
-    EST2 += RT*RT;
+    EST      += RT;
+    EST2     += RT*RT;
 
   }
 
   assert(NVP > 1);
   EST /= double(NVP);// (mu - sigma^2/2)*T
-  double VarST = (EST2 - double(NVP)*EST*EST)/(NVP - 1); // sigma^2 * T
-  double sigma2E = VarST/T_years;
-  double muE = (EST + VarST/2.0)/T_years;
+
+  double VarST   = (EST2 - double(NVP)*EST*EST)/double(NVP - 1); // sigma^2 * T
+  double sigma2E =  VarST/T_years;
+  double muE     = (EST + VarST/2.0)/T_years;
+
   cout << "mu =  "<< mu << " muE = "<< muE << endl;
   cout << "sigma2 =  "<< sigma*sigma << " sigmaE = "<< sigma2E << endl;
   return 0;
